@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Castresana C. Mando · Cloud</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#141a22; --panel2:#1b232d; --line:#293340;
+    --txt:#e8eef5; --muted:#8593a3; --accent:#f0b429; --accent2:#3b82f6;
+    --green:#3fb950; --red:#f85149; --pur:#a371f7; --cyan:#39c5cf;
+    --radius:16px; --shadow:0 8px 30px rgba(0,0,0,.35);
+  }
+  body.light{--bg:#eef1f5;--panel:#ffffff;--panel2:#f3f5f9;--line:#dde3ea;--txt:#1a2230;--muted:#5d6b7c;--shadow:0 6px 20px rgba(20,40,80,.08)}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  body{background:var(--bg);color:var(--txt);padding:18px;min-height:100vh;transition:background .2s,color .2s}
+  a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
+  header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px}
+  .brand h1{font-size:23px;letter-spacing:.5px}.brand h1 span{color:var(--accent)}
+  .badge{display:inline-block;background:linear-gradient(135deg,var(--accent),#ff8a00);color:#1a1205;font-size:10px;font-weight:800;letter-spacing:1px;padding:2px 8px;border-radius:6px;vertical-align:middle;margin-left:8px}
+  .brand .date{color:var(--muted);font-size:13px;margin-top:3px;text-transform:capitalize}
+  .sync{font-size:11px;color:var(--muted);margin-top:2px}
+  .hdr-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .lnk{display:flex;align-items:center;gap:6px;color:#fff;padding:8px 13px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:var(--shadow)}
+  .lnk:hover{filter:brightness(1.13);text-decoration:none}
+  .lnk-ide{background:#0a8754}.lnk-web{background:#1f6feb}.lnk-yt{background:#cc2222}.lnk-custom{background:#4a5568}
+  .lnk-inmo{background:#8957e5}.lnk-crm{background:#bf4080}
+  .notas-link{display:inline-flex;align-items:center;gap:5px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600}
+  .notas-link:hover{border-color:var(--accent);text-decoration:none}
+  .btn{background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:7px 12px;border-radius:9px;font-size:13px;cursor:pointer}
+  .btn:hover{border-color:var(--accent)}
+  .btn-mini{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:3px 8px;font-size:12px;cursor:pointer}
+  .btn-mini:hover{color:var(--txt);border-color:var(--accent)}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  @media(max-width:680px){.summary{grid-template-columns:repeat(2,1fr)}}
+  .scard{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+  .scard .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+  .scard .val{font-size:21px;font-weight:800;margin-top:5px}.scard .val small{font-size:13px;font-weight:500;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;min-height:150px;box-shadow:var(--shadow)}
+  .card h2{font-size:14px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:12px;justify-content:space-between}
+  .card h2 .ttl{display:flex;align-items:center;gap:8px}
+  .dot{width:9px;height:9px;border-radius:50%}
+  .span4{grid-column:span 4}.span8{grid-column:span 8}
+  @media(max-width:1100px){.grid{grid-template-columns:repeat(6,1fr)}.span4{grid-column:span 3}.span8{grid-column:span 6}}
+  @media(max-width:680px){.grid{grid-template-columns:1fr}[class*=span]{grid-column:span 1!important}}
+  .row{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .row:last-child{border-bottom:none}.row .main{flex:1;min-width:0}.row .sub{color:var(--muted);font-size:12px}
+  .row .strike{text-decoration:line-through;color:var(--muted)}
+  .x{color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:0 2px}.x:hover{color:var(--red)}
+  input,select,textarea{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:7px 9px;font-size:13px;width:100%;font-family:inherit}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  .addform{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.addform input,.addform select{flex:1;min-width:70px}
+  .addbtn{background:var(--accent);color:#1a1205;border:none;border-radius:8px;padding:7px 12px;font-weight:700;cursor:pointer;font-size:13px}
+  .addbtn:hover{filter:brightness(1.08)}
+  .empty{color:var(--muted);font-size:13px;font-style:italic;padding:8px 0}
+  input[type=checkbox]{width:auto}
+  .rings{display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .ring-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}.ring-lbl{font-size:12px;color:var(--muted);text-align:center}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:680px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+  .kpi .num{font-size:26px;font-weight:800}.kpi .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+  .kpi .goal{font-size:11px;color:var(--muted);margin-top:4px}
+  .bar{height:5px;background:var(--line);border-radius:5px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent)}
+  .money-row{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px solid var(--line)}
+  .big{font-size:30px;font-weight:800;margin:4px 0}.pos{color:var(--green)}.neg{color:var(--red)}
+  .habits{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .habit{background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:13px;cursor:pointer;user-select:none}
+  .habit.on{background:var(--green);color:#06210f;border-color:var(--green);font-weight:600}
+  .pipeline{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+  .stage{flex:1;min-width:60px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 6px;text-align:center}
+  .stage .n{font-size:20px;font-weight:800}.stage .s{font-size:10px;color:var(--muted);text-transform:uppercase}
+  .scroll{max-height:260px;overflow:auto}.scroll::-webkit-scrollbar{width:6px}.scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px}
+  .search{margin-bottom:8px}
+  .next-visit{background:linear-gradient(135deg,rgba(240,180,41,.16),transparent);border:1px solid var(--accent);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+  .next-visit .t{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--accent)}.next-visit .b{font-size:15px;font-weight:700;margin-top:2px}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:22px;line-height:1.6}
+  /* login */
+  #loginOverlay{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:50}
+  .login-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px;width:320px;max-width:90vw;box-shadow:var(--shadow);text-align:center}
+  .login-box h2{font-size:18px;margin-bottom:4px}.login-box p{color:var(--muted);font-size:13px;margin-bottom:16px}
+  .login-box input{margin-bottom:12px}
+  .login-box button{width:100%}#loginErr{color:var(--red);font-size:12px;min-height:16px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div id="loginOverlay">
+  <div class="login-box">
+    <h2>Castresana Cockpit</h2>
+    <p>Introduce tu contraseña</p>
+    <input id="loginPass" type="password" placeholder="Contraseña" onkeydown="if(event.key==='Enter')doLogin()" />
+    <button class="addbtn" onclick="doLogin()">Entrar</button>
+    <div id="loginErr"></div>
+  </div>
+</div>
+
+<header>
+  <div class="brand">
+    <h1>CASTRESANA <span>C. MANDO</span><span class="badge">CLOUD</span></h1>
+    <div class="date" id="today"></div>
+    <div class="sync" id="syncState">·</div>
+  </div>
+  <div class="hdr-actions" id="linkHub"></div>
+</header>
+
+<div class="summary" id="summary"></div>
+
+<div class="grid">
+  <section class="card span4">
+    <h2><span class="ttl"><span class="dot" style="background:var(--accent)"></span>Visitas</span><span id="visitasCount" class="sub"></span></h2>
+    <div id="nextVisit"></div><div class="scroll" id="visitasList"></div>
+    <div class="addform"><input id="vFecha" type="date" /><input id="vHora" type="time" style="max-width:90px" /><input id="vPiso" placeholder="Inmueble" /><input id="vCliente" placeholder="Cliente" /><button class="addbtn" onclick="addVisita()">+</button></div>
+  </section>
+
+  <section class="card span4">
+    <h2><span class="ttl"><span class="dot" style="background:var(--accent2)"></span>Leads / Pipeline</span></h2>
+    <div class="pipeline" id="pipeline"></div>
+    <input class="search" id="leadSearch" placeholder="🔍 Buscar lead..." oninput="renderLeads()"/>
+    <div class="scroll" id="leadsList"></div>
+    <div class="addform"><input id="lNombre" placeholder="Nombre lead" /><input id="lInfo" placeholder="Busca / nota" /><select id="lEstado"><option>Nuevo</option><option>Contactado</option><option>Visita</option><option>Oferta</option><option>Cerrado</option></select><button class="addbtn" onclick="addLead()">+</button></div>
+  </section>
+
+  <section class="card span4">
+    <h2><span class="ttl"><span class="dot" style="background:var(--cyan)"></span>KPIs del mes</span><button class="btn-mini" onclick="editGoals()">objetivos</button></h2>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section class="card span8">
+    <h2><span class="ttl"><span class="dot" style="background:var(--pur)"></span>Cartera / Captaciones</span><span id="carteraCount" class="sub"></span></h2>
+    <input class="search" id="inmSearch" placeholder="🔍 Buscar por ref o zona..." oninput="renderCartera()"/>
+    <div class="scroll" id="carteraList"></div>
+    <div class="addform"><input id="iRef" placeholder="Ref / nombre" style="max-width:120px"/><input id="iZona" placeholder="Zona" style="max-width:110px"/><input id="iPrecio" type="number" placeholder="€" style="max-width:90px"/><input id="iLink" placeholder="Enlace anuncio (Idealista...)" /><select id="iEstado" style="max-width:120px"><option>Activo</option><option>Reservado</option><option>Vendido</option></select><button class="addbtn" onclick="addInmueble()">+</button></div>
+  </section>
+
+  <section class="card span4">
+    <h2><span class="ttl"><span class="dot" style="background:var(--green)"></span>Finanzas</span><span class="sub" id="finMonth"></span></h2>
+    <div style="text-align:center"><div class="sub">Balance del mes</div><div class="big" id="finBalance">€0</div></div>
+    <div id="finGoal" style="margin:6px 0 10px"></div><div class="scroll" id="finList"></div>
+    <div class="addform"><input id="fConcepto" placeholder="Concepto" /><input id="fImporte" type="number" placeholder="€ (+/-)" style="max-width:100px"/><select id="fTipo" style="max-width:120px"><option value="com">Comisión</option><option value="ing">Ingreso</option><option value="gas">Gasto</option></select><button class="addbtn" onclick="addFin()">+</button></div>
+  </section>
+
+  <section class="card span4">
+    <h2><span class="ttl"><span class="dot" style="background:var(--accent)"></span>Tareas de hoy</span><span id="tareasCount" class="sub"></span></h2>
+    <div class="scroll" id="tareasList"></div>
+    <div class="addform"><input id="tTexto" placeholder="Nueva tarea..." onkeydown="if(event.key==='Enter')addTarea()"/><button class="addbtn" onclick="addTarea()">+</button></div>
+  </section>
+
+  <section class="card span4">
+    <h2><span class="ttl"><span class="dot" style="background:var(--red)"></span>Salud & Actividad</span><button class="btn-mini" onclick="editSalud()">editar</button></h2>
+    <div class="rings" id="rings"></div>
+  </section>
+
+  <section class="card span4">
+    <h2><span class="ttl"><span class="dot" style="background:var(--pur)"></span>Notas rápidas · Boli</span><a class="notas-link" id="lnkCopia" href="#" target="_blank" rel="noopener">📋 Copia y Punto</a></h2>
+    <textarea id="notas" rows="7" placeholder="Tu boli: apunta aquí cualquier idea, recordatorio o pendiente..." oninput="S.notas=this.value;saveQuiet()" style="resize:vertical;flex:1"></textarea>
+  </section>
+
+  <section class="card span8">
+    <h2><span class="ttl"><span class="dot" style="background:var(--cyan)"></span>Nutrición & Hábitos</span><span class="sub" id="kcalTotal"></span></h2>
+    <div style="display:flex;gap:20px;flex-wrap:wrap">
+      <div style="flex:1;min-width:240px"><div class="scroll" id="comidasList" style="max-height:150px"></div><div class="addform"><input id="cAlimento" placeholder="Comida" /><input id="cKcal" type="number" placeholder="kcal" style="max-width:90px"/><button class="addbtn" onclick="addComida()">+</button></div></div>
+      <div style="flex:1;min-width:200px"><div class="sub" style="margin-bottom:8px">Hábitos de hoy</div><div class="habits" id="habits"></div></div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  Versión <b>Cloud</b> · datos en Supabase, sincronizados entre dispositivos · entrada por bot de Telegram.<br/>
+  Usa <b>⬇ Backup</b> para guardar una copia y <b>⬆ Restaurar</b> para importar tus datos del cockpit local.
+</footer>
+
+<script>
+const todayStr=()=>new Date().toISOString().slice(0,10);
+const defaults={
+  theme:'dark', notas:'',
+  links:{idealista:'https://www.idealista.com/pro/asesoria-castresana/',web:'https://asesoriacastresana.com',youtube:'https://www.youtube.com/',inmoweb:'https://panel.inmoweb.es',crm:'https://app.jpaumoralejo.es/',copiaypunto:''},
+  customLinks:[], visitas:[], leads:[], inmuebles:[], finanzas:[], tareas:[],
+  comidas:{}, habitos:{}, salud:{pasos:0,pasosGoal:9000,ejercicio:0,ejercicioGoal:45,kcalGoal:2200},
+  goals:{visitas:20,leads:25,captaciones:4,ahorro:1500},
+  habitList:['💧 Agua','🚶 Andar','🤸 Calistenia','🥗 Dieta saludable','🔥 Días de fuego','📚 Leer','🧘 Pausa']
+};
+let S=JSON.parse(JSON.stringify(defaults));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const eur=n=>(n<0?'-':'')+'€'+Math.abs(Math.round(n)).toLocaleString('es-ES');
+const esc=s=>(s||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+const val=id=>document.getElementById(id).value.trim();
+const clr=id=>document.getElementById(id).value='';
+
+/* ---------- sincronización nube ---------- */
+let pushTimer=null;
+function setSync(t){document.getElementById('syncState').textContent=t}
+function syncPush(){
+  clearTimeout(pushTimer);
+  setSync('guardando…');
+  pushTimer=setTimeout(async()=>{
+    try{
+      const r=await fetch('/api/state',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({data:S})});
+      setSync(r.ok?'✓ sincronizado':'⚠ error al guardar');
+    }catch(e){setSync('⚠ sin conexión')}
+  },600);
+}
+function save(){syncPush();render()}
+function saveQuiet(){syncPush()}
+
+async function boot(){
+  try{
+    const r=await fetch('/api/state');
+    if(r.status===401){showLogin();return}
+    const j=await r.json();
+    S=Object.assign(JSON.parse(JSON.stringify(defaults)), j.data||{});
+  }catch(e){ S=JSON.parse(JSON.stringify(defaults)); }
+  // migraciones / asegurar estructura
+  S.links=Object.assign({},defaults.links,S.links||{});
+  S.salud=Object.assign({},defaults.salud,S.salud||{});
+  S.goals=Object.assign({},defaults.goals,S.goals||{});
+  S.habitList=S.habitList&&S.habitList.length?S.habitList:defaults.habitList.slice();
+  ['🚶 Andar','🤸 Calistenia','🥗 Dieta saludable','🔥 Días de fuego'].forEach(h=>{if(!S.habitList.includes(h))S.habitList.push(h)});
+  ['visitas','leads','inmuebles','finanzas','tareas','customLinks'].forEach(k=>{if(!Array.isArray(S[k]))S[k]=[]});
+  S.comidas=S.comidas||{};S.habitos=S.habitos||{};
+  hideLogin();
+  document.getElementById('vFecha').value=todayStr();
+  render();setSync('✓ sincronizado');
+}
+
+/* ---------- login ---------- */
+function showLogin(){document.getElementById('loginOverlay').style.display='flex'}
+function hideLogin(){document.getElementById('loginOverlay').style.display='none'}
+async function doLogin(){
+  const p=document.getElementById('loginPass').value;
+  const r=await fetch('/api/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:p})});
+  if(r.ok){document.getElementById('loginErr').textContent='';boot();}
+  else{document.getElementById('loginErr').textContent='Contraseña incorrecta';}
+}
+
+/* ---------- header + hub ---------- */
+function renderHeader(){
+  const d=new Date();
+  document.getElementById('today').textContent=d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.body.className=S.theme==='light'?'light':'';
+  let html=`<a class="lnk lnk-ide" href="${esc(S.links.idealista)||'#'}" target="_blank" rel="noopener">🏠 Idealista</a>`+
+           `<a class="lnk lnk-inmo" href="${esc(S.links.inmoweb)||'#'}" target="_blank" rel="noopener">🏢 Inmoweb</a>`+
+           `<a class="lnk lnk-crm" href="${esc(S.links.crm)||'#'}" target="_blank" rel="noopener">📇 CRM</a>`+
+           `<a class="lnk lnk-web" href="${esc(S.links.web)||'#'}" target="_blank" rel="noopener">🌐 Castresana</a>`+
+           `<a class="lnk lnk-yt" href="${esc(S.links.youtube)||'#'}" target="_blank" rel="noopener">▶ YouTube</a>`;
+  S.customLinks.forEach((l,i)=>html+=`<a class="lnk lnk-custom" href="${esc(l.url)||'#'}" target="_blank" rel="noopener" oncontextmenu="delCustomLink(event,${i})" title="clic dcho = borrar">🔗 ${esc(l.name)}</a>`);
+  html+=`<button class="btn" onclick="editLinks()">✎ enlaces</button><button class="btn" onclick="addCustomLink()">+ enlace</button>`+
+        `<button class="btn" onclick="toggleTheme()">${S.theme==='light'?'🌙':'☀️'}</button>`+
+        `<button class="btn" onclick="exportData()">⬇</button><button class="btn" onclick="importData()">⬆</button>`;
+  document.getElementById('linkHub').innerHTML=html;
+  const cp=document.getElementById('lnkCopia');if(cp)cp.href=S.links.copiaypunto||'#';
+}
+function editLinks(){
+  S.links=S.links||{};
+  const i=prompt('Enlace Idealista:',S.links.idealista);if(i===null)return;S.links.idealista=i.trim();
+  const im=prompt('Enlace de tu Inmoweb:',S.links.inmoweb);if(im!==null)S.links.inmoweb=im.trim();
+  const cr=prompt('Enlace de tu CRM:',S.links.crm);if(cr!==null)S.links.crm=cr.trim();
+  const w=prompt('Enlace web Asesoría Castresana:',S.links.web);if(w!==null)S.links.web=w.trim();
+  const y=prompt('Enlace de tu canal de YouTube:',S.links.youtube);if(y!==null)S.links.youtube=y.trim();
+  const cp=prompt('Enlace de Copia y Punto (Boli):',S.links.copiaypunto);if(cp!==null)S.links.copiaypunto=cp.trim();
+  save();
+}
+function addCustomLink(){const n=prompt('Nombre del enlace:');if(!n)return;const u=prompt('URL:');if(!u)return;S.customLinks.push({name:n.trim(),url:u.trim()});save()}
+function delCustomLink(e,i){e.preventDefault();if(confirm('¿Borrar enlace?')){S.customLinks.splice(i,1);save()}}
+function toggleTheme(){S.theme=S.theme==='light'?'dark':'light';save()}
+
+/* ---------- summary ---------- */
+function renderSummary(){
+  const arr=[...S.visitas].filter(v=>!v.hecho).sort((a,b)=>(a.fecha+(a.hora||'')).localeCompare(b.fecha+(b.hora||'')));
+  const next=arr[0];
+  const hot=S.leads.filter(l=>l.estado==='Oferta'||l.estado==='Visita').length;
+  const m=todayStr().slice(0,7);
+  const bal=S.finanzas.filter(f=>f.fecha.slice(0,7)===m).reduce((a,f)=>a+f.importe,0);
+  const pend=S.tareas.filter(t=>!t.hecho).length;
+  const s=(lbl,v)=>`<div class="scard"><div class="lbl">${lbl}</div><div class="val">${v}</div></div>`;
+  document.getElementById('summary').innerHTML=
+    s('Próxima visita',next?`${esc(next.piso)} <small>${fmtFecha(next.fecha)}${next.hora?' '+next.hora:''}</small>`:'<small>ninguna</small>')+
+    s('Leads calientes',hot+' <small>en visita/oferta</small>')+
+    s('Balance mes',`<span class="${bal>=0?'pos':'neg'}">${eur(bal)}</span>`)+
+    s('Tareas pendientes',pend);
+}
+
+/* ---------- VISITAS ---------- */
+function addVisita(){const f=val('vFecha')||todayStr(),h=val('vHora'),p=val('vPiso'),c=val('vCliente');if(!p){alert('Indica el inmueble');return}S.visitas.push({id:uid(),fecha:f,hora:h,piso:p,cliente:c,hecho:false});['vPiso','vCliente','vHora'].forEach(clr);save()}
+function renderVisitas(){
+  const arr=[...S.visitas].sort((a,b)=>(a.fecha+(a.hora||'')).localeCompare(b.fecha+(b.hora||'')));
+  const futuras=arr.filter(v=>!v.hecho);
+  document.getElementById('visitasCount').textContent=futuras.length+' pendientes';
+  const nv=futuras[0];
+  document.getElementById('nextVisit').innerHTML=nv?`<div class="next-visit"><div class="t">⏭ Siguiente visita</div><div class="b">${esc(nv.piso)}${nv.cliente?' · '+esc(nv.cliente):''}</div><div class="sub">${fmtFecha(nv.fecha)}${nv.hora?' · '+nv.hora:''}</div></div>`:'';
+  document.getElementById('visitasList').innerHTML=arr.length?arr.map(v=>`<div class="row"><input type="checkbox" ${v.hecho?'checked':''} onchange="toggleVisita('${v.id}')"/><div class="main"><div class="${v.hecho?'strike':''}">${esc(v.piso)} ${v.cliente?'· '+esc(v.cliente):''}</div><div class="sub">${fmtFecha(v.fecha)}${v.hora?' · '+v.hora:''}</div></div><span class="x" onclick="del('visitas','${v.id}')">×</span></div>`).join(''):'<div class="empty">Sin visitas.</div>';
+}
+function toggleVisita(id){const v=S.visitas.find(x=>x.id===id);v.hecho=!v.hecho;save()}
+function fmtFecha(f){if(f===todayStr())return'HOY';const d=new Date(f+'T00:00');return d.toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'})}
+
+/* ---------- LEADS ---------- */
+const STAGES=['Nuevo','Contactado','Visita','Oferta','Cerrado'];
+function addLead(){const n=val('lNombre');if(!n){alert('Nombre del lead');return}S.leads.push({id:uid(),nombre:n,info:val('lInfo'),estado:val('lEstado'),fecha:todayStr()});['lNombre','lInfo'].forEach(clr);save()}
+function renderLeads(){
+  const pc={};STAGES.forEach(s=>pc[s]=0);S.leads.forEach(l=>pc[l.estado]=(pc[l.estado]||0)+1);
+  document.getElementById('pipeline').innerHTML=STAGES.map(s=>`<div class="stage"><div class="n">${pc[s]}</div><div class="s">${s}</div></div>`).join('');
+  const q=(document.getElementById('leadSearch').value||'').toLowerCase();
+  const list=S.leads.filter(x=>!q||(x.nombre+' '+x.info).toLowerCase().includes(q));
+  document.getElementById('leadsList').innerHTML=list.length?list.map(x=>`<div class="row"><div class="main"><div>${esc(x.nombre)}</div><div class="sub">${esc(x.info)||'—'}</div></div><select onchange="setLead('${x.id}',this.value)" style="max-width:110px">${STAGES.map(s=>`<option ${s===x.estado?'selected':''}>${s}</option>`).join('')}</select><span class="x" onclick="del('leads','${x.id}')">×</span></div>`).join(''):'<div class="empty">Sin leads.</div>';
+}
+function setLead(id,v){S.leads.find(x=>x.id===id).estado=v;save()}
+
+/* ---------- CARTERA ---------- */
+function addInmueble(){const r=val('iRef');if(!r){alert('Ref o nombre del inmueble');return}S.inmuebles.push({id:uid(),ref:r,zona:val('iZona'),precio:+val('iPrecio')||0,link:val('iLink'),estado:val('iEstado'),alta:todayStr()});['iRef','iZona','iPrecio','iLink'].forEach(clr);save()}
+function renderCartera(){
+  const activos=S.inmuebles.filter(i=>i.estado==='Activo').length;
+  document.getElementById('carteraCount').textContent=S.inmuebles.length+' total · '+activos+' activos';
+  const q=(document.getElementById('inmSearch').value||'').toLowerCase();
+  const list=S.inmuebles.filter(i=>!q||(i.ref+' '+i.zona).toLowerCase().includes(q));
+  document.getElementById('carteraList').innerHTML=list.length?list.map(i=>{
+    const dias=Math.round((Date.now()-new Date(i.alta+'T00:00'))/864e5);
+    return `<div class="row"><div class="main"><div>${esc(i.ref)} ${i.zona?'· '+esc(i.zona):''} ${i.link?`· <a href="${esc(i.link)}" target="_blank" rel="noopener">ver anuncio ↗</a>`:''}</div><div class="sub">${i.precio?eur(i.precio):'sin precio'} · ${dias} días en mercado</div></div><select onchange="setInmueble('${i.id}',this.value)" style="max-width:110px">${['Activo','Reservado','Vendido'].map(s=>`<option ${s===i.estado?'selected':''}>${s}</option>`).join('')}</select><span class="x" onclick="del('inmuebles','${i.id}')">×</span></div>`}).join(''):'<div class="empty">Sin inmuebles.</div>';
+}
+function setInmueble(id,v){S.inmuebles.find(x=>x.id===id).estado=v;save()}
+
+/* ---------- KPIs ---------- */
+function renderKpis(){
+  const m=todayStr().slice(0,7);
+  const visitasMes=S.visitas.filter(v=>v.fecha.slice(0,7)===m).length;
+  const leadsMes=S.leads.filter(l=>l.fecha.slice(0,7)===m).length;
+  const captMes=S.inmuebles.filter(i=>i.alta.slice(0,7)===m).length;
+  const cerrados=S.leads.filter(l=>l.estado==='Cerrado').length;
+  const conv=leadsMes?Math.round(cerrados/leadsMes*100):0;
+  const g=S.goals;
+  const k=(num,lbl,goal)=>`<div class="kpi"><div class="num">${num}</div><div class="lbl">${lbl}</div>${goal?`<div class="goal">meta ${goal}</div><div class="bar"><i style="width:${Math.min(100,(''+num).replace('%','')/goal*100)}%"></i></div>`:''}</div>`;
+  document.getElementById('kpis').innerHTML=k(visitasMes,'Visitas',g.visitas)+k(leadsMes,'Leads',g.leads)+k(captMes,'Captaciones',g.captaciones)+k(conv+'%','Conversión','');
+}
+function editGoals(){const g=S.goals;const v=prompt('Meta visitas/mes:',g.visitas);if(v===null)return;g.visitas=+v||g.visitas;const l=prompt('Meta leads/mes:',g.leads);if(l!==null)g.leads=+l||g.leads;const c=prompt('Meta captaciones/mes:',g.captaciones);if(c!==null)g.captaciones=+c||g.captaciones;const a=prompt('Meta ahorro/mes (€):',g.ahorro);if(a!==null)g.ahorro=+a||g.ahorro;save()}
+
+/* ---------- FINANZAS ---------- */
+function addFin(){const c=val('fConcepto');let imp=+val('fImporte');if(!c||!imp){alert('Concepto e importe');return}const tipo=val('fTipo');imp=tipo==='gas'?-Math.abs(imp):Math.abs(imp);S.finanzas.push({id:uid(),concepto:c,importe:imp,tipo,fecha:todayStr()});['fConcepto','fImporte'].forEach(clr);save()}
+function renderFin(){
+  const m=todayStr().slice(0,7);const mes=S.finanzas.filter(f=>f.fecha.slice(0,7)===m);
+  const bal=mes.reduce((a,f)=>a+f.importe,0);
+  document.getElementById('finMonth').textContent=new Date().toLocaleDateString('es-ES',{month:'long'});
+  const be=document.getElementById('finBalance');be.textContent=eur(bal);be.className='big '+(bal>=0?'pos':'neg');
+  const ahorro=S.goals.ahorro;
+  document.getElementById('finGoal').innerHTML=`<div class="sub">Objetivo ahorro: ${eur(ahorro)}</div><div class="bar"><i style="width:${Math.max(0,Math.min(100,bal/ahorro*100))}%"></i></div>`;
+  document.getElementById('finList').innerHTML=mes.length?[...mes].reverse().map(f=>`<div class="money-row"><span>${esc(f.concepto)} ${f.tipo==='com'?'<span class="sub">· comisión</span>':''}</span><span class="${f.importe>=0?'pos':'neg'}">${eur(f.importe)} <span class="x" onclick="del('finanzas','${f.id}')">×</span></span></div>`).join(''):'<div class="empty">Sin movimientos este mes.</div>';
+}
+
+/* ---------- TAREAS ---------- */
+function addTarea(){const t=val('tTexto');if(!t)return;S.tareas.push({id:uid(),texto:t,hecho:false});clr('tTexto');save()}
+function renderTareas(){const pend=S.tareas.filter(t=>!t.hecho).length;document.getElementById('tareasCount').textContent=pend+' pendientes';document.getElementById('tareasList').innerHTML=S.tareas.length?S.tareas.map(t=>`<div class="row"><input type="checkbox" ${t.hecho?'checked':''} onchange="toggleTarea('${t.id}')"/><div class="main ${t.hecho?'strike':''}">${esc(t.texto)}</div><span class="x" onclick="del('tareas','${t.id}')">×</span></div>`).join(''):'<div class="empty">Sin tareas. ¡Día limpio!</div>'}
+function toggleTarea(id){const t=S.tareas.find(x=>x.id===id);t.hecho=!t.hecho;save()}
+
+/* ---------- SALUD ---------- */
+function ring(v,goal,color,label){const pct=Math.min(1,goal?v/goal:0),r=34,c=2*Math.PI*r,off=c*(1-pct);return `<div class="ring-wrap"><svg width="86" height="86" viewBox="0 0 86 86"><circle cx="43" cy="43" r="${r}" fill="none" stroke="var(--line)" stroke-width="9"/><circle cx="43" cy="43" r="${r}" fill="none" stroke="${color}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 43 43)"/><text x="43" y="48" text-anchor="middle" fill="var(--txt)" font-size="15" font-weight="700">${Math.round(pct*100)}%</text></svg><div class="ring-lbl">${label}<br/>${v} / ${goal}</div></div>`}
+function renderSalud(){const s=S.salud;const kcal=Object.values(S.comidas[todayStr()]||{}).reduce((a,c)=>a+c.kcal,0);document.getElementById('rings').innerHTML=ring(s.pasos,s.pasosGoal,'var(--red)','Pasos')+ring(s.ejercicio,s.ejercicioGoal,'var(--green)','Ejercicio (min)')+ring(kcal,s.kcalGoal,'var(--cyan)','Calorías')}
+function editSalud(){const s=S.salud;const p=prompt('Pasos de hoy:',s.pasos);if(p===null)return;s.pasos=+p||0;const e=prompt('Minutos de ejercicio hoy:',s.ejercicio);if(e!==null)s.ejercicio=+e||0;const pg=prompt('Meta de pasos:',s.pasosGoal);if(pg!==null)s.pasosGoal=+pg||s.pasosGoal;save()}
+
+/* ---------- NUTRICION ---------- */
+function addComida(){const a=val('cAlimento'),k=+val('cKcal');if(!a){alert('Nombre de la comida');return}const d=todayStr();S.comidas[d]=S.comidas[d]||{};S.comidas[d][uid()]={alimento:a,kcal:k||0};['cAlimento','cKcal'].forEach(clr);save()}
+function renderComidas(){const d=todayStr(),com=S.comidas[d]||{};const ids=Object.keys(com);const total=ids.reduce((a,id)=>a+com[id].kcal,0);document.getElementById('kcalTotal').textContent=total+' kcal hoy';document.getElementById('comidasList').innerHTML=ids.length?ids.map(id=>`<div class="row"><div class="main">${esc(com[id].alimento)}</div><span class="sub">${com[id].kcal} kcal</span><span class="x" onclick="delComida('${id}')">×</span></div>`).join(''):'<div class="empty">Sin comidas registradas hoy.</div>'}
+function delComida(id){delete S.comidas[todayStr()][id];save()}
+
+/* ---------- HABITOS ---------- */
+function renderHabits(){const d=todayStr();S.habitos[d]=S.habitos[d]||{};document.getElementById('habits').innerHTML=S.habitList.map((h,i)=>`<div class="habit ${S.habitos[d][i]?'on':''}" onclick="toggleHabit(${i})">${esc(h)}</div>`).join('')}
+function toggleHabit(i){const d=todayStr();S.habitos[d]=S.habitos[d]||{};S.habitos[d][i]=!S.habitos[d][i];save()}
+
+/* ---------- helpers ---------- */
+function del(arr,id){if(confirm('¿Eliminar?')){S[arr]=S[arr].filter(x=>x.id!==id);save()}}
+function exportData(){const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='castresana-cloud-backup-'+todayStr()+'.json';a.click()}
+function importData(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{S=Object.assign(JSON.parse(JSON.stringify(defaults)),JSON.parse(r.result));save();alert('Datos importados y subidos a la nube ✅')}catch(err){alert('Archivo no válido')}};r.readAsText(f)};inp.click()}
+
+function render(){renderHeader();renderSummary();renderVisitas();renderLeads();renderKpis();renderCartera();renderFin();renderTareas();renderSalud();renderComidas();renderHabits();document.getElementById('notas').value=S.notas||''}
+
+boot();
+</script>
+</body>
+</html>
