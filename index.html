@@ -168,7 +168,7 @@
 </div>
 
 <footer>
-  Versión <b>Cloud</b> · datos en Supabase, sincronizados entre dispositivos · entrada por bot de Telegram.<br/>
+  Versión <b>Cloud · build FOTOS-11</b> · datos en Supabase, sincronizados entre dispositivos · entrada por bot de Telegram.<br/>
   Usa <b>⬇ Backup</b> para guardar una copia y <b>⬆ Restaurar</b> para importar tus datos del cockpit local.
 </footer>
 
@@ -324,7 +324,7 @@ function renderCartera(){
   const list=S.inmuebles.filter(i=>!q||(i.ref+' '+i.zona).toLowerCase().includes(q));
   document.getElementById('carteraList').innerHTML=list.length?list.map(i=>{
     const dias=Math.round((Date.now()-new Date(i.alta+'T00:00'))/864e5);
-    return `<div class="row">${i.foto?`<img src="${esc(i.foto)}" onclick="window.open('${esc(i.foto)}','_blank')" style="width:42px;height:42px;object-fit:cover;border-radius:6px;cursor:pointer"/>`:''}<div class="main"><div>${esc(i.ref)} ${i.zona?'· '+esc(i.zona):''} ${i.link?`· <a href="${esc(i.link)}" target="_blank" rel="noopener">ver anuncio ↗</a>`:''}</div><div class="sub">${i.precio?eur(i.precio):'sin precio'} · ${dias} días en mercado</div></div><span class="x" onclick="addPhoto('${i.id}')" title="Añadir foto" style="font-size:15px">📷</span><select onchange="setInmueble('${i.id}',this.value)" style="max-width:110px">${['Activo','Reservado','Vendido'].map(s=>`<option ${s===i.estado?'selected':''}>${s}</option>`).join('')}</select><span class="x" onclick="del('inmuebles','${i.id}')">×</span></div>`}).join(''):'<div class="empty">Sin inmuebles.</div>';
+    return `<div class="row">${i.foto?`<img src="${esc(i.foto)}" onclick="window.open('${esc(i.foto)}','_blank')" style="width:42px;height:42px;object-fit:cover;border-radius:6px;cursor:pointer"/>`:''}<div class="main"><div>${esc(i.ref)} ${i.zona?'· '+esc(i.zona):''} ${i.link?`· <a href="${esc(i.link)}" target="_blank" rel="noopener">ver anuncio ↗</a>`:''}</div><div class="sub">${i.precio?eur(i.precio):'sin precio'} · ${dias} días en mercado</div></div><button onclick="addPhoto('${i.id}')" title="Añadir o ver foto" style="background:#1b232d;border:1px solid #f0b429;color:#f0b429;border-radius:8px;padding:5px 9px;cursor:pointer;font-size:14px;white-space:nowrap">📷 Foto</button><select onchange="setInmueble('${i.id}',this.value)" style="max-width:110px">${['Activo','Reservado','Vendido'].map(s=>`<option ${s===i.estado?'selected':''}>${s}</option>`).join('')}</select><span class="x" onclick="del('inmuebles','${i.id}')">×</span></div>`}).join(''):'<div class="empty">Sin inmuebles.</div>';
 }
 function setInmueble(id,v){S.inmuebles.find(x=>x.id===id).estado=v;save()}
 function addPhoto(id){var inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){var img=new Image();img.onload=function(){var c=document.createElement('canvas');var max=1100;var sc=Math.min(1,max/Math.max(img.width,img.height));c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);c.getContext('2d').drawImage(img,0,0,c.width,c.height);subirFoto(id,c.toDataURL('image/jpeg',0.7));};img.src=rd.result;};rd.readAsDataURL(f);};inp.click();}
