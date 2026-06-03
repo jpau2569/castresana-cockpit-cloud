@@ -172,6 +172,8 @@
 </footer>
 
 <script>
+const API='https://qwljkqisnupjgzbdyzym.supabase.co/functions/v1/cockpit';
+let TOKEN=localStorage.getItem('cockpit_token')||'';
 const todayStr=()=>new Date().toISOString().slice(0,10);
 const defaults={
   theme:'dark', notas:'',
@@ -196,7 +198,7 @@ function syncPush(){
   setSync('guardando…');
   pushTimer=setTimeout(async()=>{
     try{
-      const r=await fetch('/api/state',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({data:S})});
+      const r=await fetch(API+'?p=state',{method:'POST',headers:{'content-type':'application/json','x-auth':TOKEN},body:JSON.stringify({data:S})});
       setSync(r.ok?'✓ sincronizado':'⚠ error al guardar');
     }catch(e){setSync('⚠ sin conexión')}
   },600);
@@ -206,7 +208,7 @@ function saveQuiet(){syncPush()}
 
 async function boot(){
   try{
-    const r=await fetch('/api/state');
+    const r=await fetch(API+'?p=state',{headers:{'x-auth':TOKEN}});
     if(r.status===401){showLogin();return}
     const j=await r.json();
     S=Object.assign(JSON.parse(JSON.stringify(defaults)), j.data||{});
@@ -229,8 +231,8 @@ function showLogin(){document.getElementById('loginOverlay').style.display='flex
 function hideLogin(){document.getElementById('loginOverlay').style.display='none'}
 async function doLogin(){
   const p=document.getElementById('loginPass').value;
-  const r=await fetch('/api/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:p})});
-  if(r.ok){document.getElementById('loginErr').textContent='';boot();}
+  const r=await fetch(API+'?p=login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:p})});
+  if(r.ok){const j=await r.json();TOKEN=j.token||TOKEN;localStorage.setItem('cockpit_token',TOKEN);document.getElementById('loginErr').textContent='';boot();}
   else{document.getElementById('loginErr').textContent='Contraseña incorrecta';}
 }
 
@@ -372,6 +374,40 @@ function importData(){const inp=document.createElement('input');inp.type='file';
 function render(){renderHeader();renderSummary();renderVisitas();renderLeads();renderKpis();renderCartera();renderFin();renderTareas();renderSalud();renderComidas();renderHabits();document.getElementById('notas').value=S.notas||''}
 
 boot();
+</script>
+
+<div id='agfab' onclick='agToggle()' style='position:fixed;right:18px;bottom:18px;z-index:60;background:linear-gradient(135deg,#f0b429,#ff8a00);color:#1a1205;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.4)'>&#129302;</div>
+<div id='agpanel' style='display:none;position:fixed;right:18px;bottom:84px;z-index:60;width:360px;max-width:92vw;height:520px;max-height:80vh;background:#141a22;border:1px solid #293340;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.5);flex-direction:column;overflow:hidden;color:#e8eef5;font-family:-apple-system,BlinkMacSystemFont,sans-serif'>
+<div style='display:flex;gap:6px;padding:10px;border-bottom:1px solid #293340;align-items:center;flex-wrap:wrap'>
+<button id='agJuanjo' style='background:#f0b429;color:#1a1205;border:none;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer'>Juanjo</button>
+<button id='agPepe' style='background:#1b232d;color:#e8eef5;border:1px solid #293340;border-radius:8px;padding:6px 10px;cursor:pointer'>Pepe</button>
+<select id='agprov' style='margin-left:auto;background:#1b232d;color:#e8eef5;border:1px solid #293340;border-radius:8px;padding:6px'><option value='claude'>Claude</option><option value='gemini'>Gemini</option><option value='perplexity'>Perplexity</option></select>
+<button onclick='agKeys()' title='Claves IA' style='background:#1b232d;border:1px solid #293340;border-radius:8px;padding:6px;cursor:pointer'>&#128273;</button>
+<button onclick='agTelegram()' title='Conectar Telegram' style='background:#1b232d;border:1px solid #293340;border-radius:8px;padding:6px;cursor:pointer'>&#128242;</button>
+<button onclick='agCal()' title='Google Calendar' style='background:#1b232d;border:1px solid #293340;border-radius:8px;padding:6px;cursor:pointer'>&#128197;</button>
+<button onclick='agImport()' title='Importar de Idealista' style='background:#1b232d;border:1px solid #293340;border-radius:8px;padding:6px;cursor:pointer'>&#128229;</button>
+</div>
+<div id='agmsgs' style='flex:1;overflow:auto;padding:12px;font-size:14px'></div>
+<div style='display:flex;gap:6px;padding:10px;border-top:1px solid #293340'>
+<input id='aginput' placeholder='Escribe a Juanjo...' style='flex:1;background:#1b232d;color:#e8eef5;border:1px solid #293340;border-radius:8px;padding:8px'/>
+<button onclick='agVoice()' title='Dictar por voz' style='background:#1b232d;color:#e8eef5;border:1px solid #293340;border-radius:8px;padding:8px 10px;cursor:pointer'>&#127908;</button>
+<button onclick='agSend()' style='background:#f0b429;color:#1a1205;border:none;border-radius:8px;padding:8px 12px;font-weight:700;cursor:pointer'>&#10148;</button>
+</div></div>
+<script>
+function H(){return {'content-type':'application/json','x-auth':TOKEN};}
+var agAsst='Juanjo';
+function agToggle(){var p=document.getElementById('agpanel');p.style.display=p.style.display==='none'?'flex':'none';}
+function agSet(a){agAsst=a;document.getElementById('aginput').placeholder='Escribe a '+a+'...';document.getElementById('agJuanjo').style.background=a==='Juanjo'?'#f0b429':'#1b232d';document.getElementById('agJuanjo').style.color=a==='Juanjo'?'#1a1205':'#e8eef5';document.getElementById('agPepe').style.background=a==='Pepe'?'#f0b429':'#1b232d';document.getElementById('agPepe').style.color=a==='Pepe'?'#1a1205':'#e8eef5';}
+function agKeys(){S.aikeys=S.aikeys||{};var c=prompt('Clave de Claude (Anthropic):',S.aikeys.claude||'');if(c!==null)S.aikeys.claude=c.trim();var g=prompt('Clave de Gemini (Google):',S.aikeys.gemini||'');if(g!==null)S.aikeys.gemini=g.trim();var pp=prompt('Clave de Perplexity:',S.aikeys.perplexity||'');if(pp!==null)S.aikeys.perplexity=pp.trim();var fc=prompt('Clave de Firecrawl (importar de Idealista):',S.aikeys.firecrawl||'');if(fc!==null)S.aikeys.firecrawl=fc.trim();save();agAdd('sys','Claves guardadas en tu cuenta.');}
+function agCal(){var u=API+'?p=ics&key=cal_8f3a1c9e7b2d4655';agAdd('sys','Para ver tus visitas en Google Calendar: Otros calendarios > Desde URL, y pega esto:');agAdd('sys',u);}
+async function agImport(){var u=prompt('Pega el enlace del anuncio (Idealista/Fotocasa/pisos.com):');if(!u)return;agAdd('sys','Leyendo el anuncio...');try{var r=await fetch(API+'?p=scrape',{method:'POST',headers:H(),body:JSON.stringify({url:u})});var j=await r.json();if(!j.ok){agAdd('sys',j.error||'No se pudo importar');return;}var i=j.inmueble||{};S.inmuebles=S.inmuebles||[];S.inmuebles.push({id:Math.random().toString(36).slice(2,9),ref:i.ref||'Importado',zona:i.zona||'',precio:+i.precio||0,link:i.link||u,estado:i.estado||'Activo',alta:todayStr()});save();agAdd('sys','Piso importado: '+(i.ref||'')+' '+(i.zona||'')+' '+(i.precio||'')+' EUR');}catch(e){agAdd('sys','Error al importar');}}
+function agAdd(who,txt){var m=document.getElementById('agmsgs');var d=document.createElement('div');d.style.margin='8px 0';d.style.textAlign=who==='user'?'right':'left';var b=document.createElement('span');b.style.display='inline-block';b.style.padding='8px 11px';b.style.borderRadius='12px';b.style.maxWidth='85%';b.style.whiteSpace='pre-wrap';b.style.background=who==='user'?'#3b82f6':(who==='sys'?'transparent':'#1b232d');b.style.color=who==='sys'?'#8593a3':'#e8eef5';b.textContent=txt;d.appendChild(b);m.appendChild(d);m.scrollTop=m.scrollHeight;return b;}
+async function agSend(){var inp=document.getElementById('aginput');var t=inp.value.trim();if(!t)return;inp.value='';agAdd('user',t);var prov=document.getElementById('agprov').value;var th=agAdd('bot','...');try{var r=await fetch(API+'?p=chat',{method:'POST',headers:H(),body:JSON.stringify({provider:prov,assistant:agAsst,prompt:t})});var j=await r.json();th.textContent=j.reply||j.error||'Sin respuesta';}catch(e){th.textContent='Error de conexion';}}
+async function agTelegram(){var tok=prompt('Pega el token de tu bot (te lo da @BotFather):',(S.telegram&&S.telegram.token)||'');if(!tok)return;S.telegram=S.telegram||{};S.telegram.token=tok.trim();if(!S.telegram.secret)S.telegram.secret=Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2);save();agAdd('sys','Conectando el bot...');try{var r=await fetch(API+'?p=tgsetup',{method:'POST',headers:H(),body:JSON.stringify({token:S.telegram.token,secret:S.telegram.secret})});var j=await r.json();agAdd('sys',j.ok?'Bot conectado. Abre Telegram y escribe a tu bot.':('No se pudo: '+JSON.stringify(j.result||j.error||j)));}catch(e){agAdd('sys','Error de conexion');}}
+function agVoice(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){agAdd('sys','Tu navegador no permite dictado.');return;}var rec=new SR();rec.lang='es-ES';rec.interimResults=false;agAdd('sys','Escuchando...');rec.onresult=function(e){document.getElementById('aginput').value=e.results[0][0].transcript;};rec.onerror=function(){agAdd('sys','No se pudo escuchar.');};rec.start();}
+document.getElementById('agJuanjo').onclick=function(){agSet('Juanjo');};
+document.getElementById('agPepe').onclick=function(){agSet('Pepe');};
+document.getElementById('aginput').addEventListener('keydown',function(e){if(e.key==='Enter')agSend();});
 </script>
 </body>
 </html>
