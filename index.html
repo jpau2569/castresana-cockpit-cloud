@@ -99,6 +99,7 @@
 <header>
   <div class="brand">
     <h1>CASTRESANA <span>C. MANDO</span><span class="badge">CLOUD</span></h1>
+    <div id="clock" style="font-size:26px;font-weight:800;letter-spacing:2px;color:var(--accent);margin-top:2px"></div>
     <div class="date" id="today"></div>
     <div class="sync" id="syncState">·</div>
   </div>
@@ -177,7 +178,7 @@ let TOKEN=localStorage.getItem('cockpit_token')||'';
 const todayStr=()=>new Date().toISOString().slice(0,10);
 const defaults={
   theme:'dark', notas:'',
-  links:{idealista:'https://www.idealista.com/pro/asesoria-castresana/',web:'https://asesoriacastresana.com',youtube:'https://www.youtube.com/',inmoweb:'https://panel.inmoweb.es',crm:'https://app.jpaumoralejo.es/',copiaypunto:''},
+  links:{idealista:'https://www.idealista.com/pro/asesoria-castresana/',web:'https://asesoriacastresana.com',youtube:'https://www.youtube.com/',inmoweb:'https://panel.inmoweb.es',crm:'https://app.jpaumoralejo.es/',copiaypunto:'',whatsapp:'https://wa.me/34672775721'},
   customLinks:[], visitas:[], leads:[], inmuebles:[], finanzas:[], tareas:[],
   comidas:{}, habitos:{}, salud:{pasos:0,pasosGoal:9000,ejercicio:0,ejercicioGoal:45,kcalGoal:2200},
   goals:{visitas:20,leads:25,captaciones:4,ahorro:1500},
@@ -247,7 +248,8 @@ function renderHeader(){
            `<a class="lnk lnk-inmo" href="${esc(S.links.inmoweb)||'#'}">🏢 Inmoweb</a>`+
            `<a class="lnk lnk-crm" href="${esc(S.links.crm)||'#'}">📇 CRM</a>`+
            `<a class="lnk lnk-web" href="${esc(S.links.web)||'#'}">🌐 Castresana</a>`+
-           `<a class="lnk lnk-yt" href="${esc(S.links.youtube)||'#'}">▶ YouTube</a>`;
+           `<a class="lnk lnk-yt" href="${esc(S.links.youtube)||'#'}">▶ YouTube</a>`+
+           `<a class="lnk" style="background:#25D366;color:#08331b" href="${esc(S.links.whatsapp)||'#'}">💬 WhatsApp</a>`;
   S.customLinks.forEach((l,i)=>html+=`<span class="lnk lnk-custom"><a href="${esc(l.url)||'#'}" style="color:#fff;text-decoration:none">🔗 ${esc(l.name)}</a><b onclick="delCustomLink2(${i})" style="cursor:pointer;margin-left:7px;opacity:.75">✕</b></span>`);
   html+=`<button class="btn" onclick="editLinks()">✎ enlaces</button><button class="btn" onclick="addCustomLink()">+ enlace</button>`+
         `<button class="btn" onclick="toggleTheme()">${S.theme==='light'?'🌙':'☀️'}</button>`+
@@ -262,6 +264,7 @@ function editLinks(){
   const cr=prompt('Enlace de tu CRM:',S.links.crm);if(cr!==null)S.links.crm=cr.trim();
   const w=prompt('Enlace web Asesoría Castresana:',S.links.web);if(w!==null)S.links.web=w.trim();
   const y=prompt('Enlace de tu canal de YouTube:',S.links.youtube);if(y!==null)S.links.youtube=y.trim();
+  const wa=prompt('Tu WhatsApp (formato https://wa.me/34XXXXXXXXX):',S.links.whatsapp);if(wa!==null)S.links.whatsapp=wa.trim();
   const cp=prompt('Enlace de Copia y Punto (Boli):',S.links.copiaypunto);if(cp!==null)S.links.copiaypunto=cp.trim();
   save();
 }
@@ -377,6 +380,8 @@ function importData(){const inp=document.createElement('input');inp.type='file';
 
 function render(){renderHeader();renderSummary();renderVisitas();renderLeads();renderKpis();renderCartera();renderFin();renderTareas();renderSalud();renderComidas();renderHabits();document.getElementById('notas').value=S.notas||''}
 
+function tick(){var c=document.getElementById('clock');if(c)c.textContent=new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+tick();setInterval(tick,1000);
 boot();
 </script>
 
