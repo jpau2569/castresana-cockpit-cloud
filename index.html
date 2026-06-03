@@ -161,7 +161,7 @@
     <h2><span class="ttl"><span class="dot" style="background:var(--cyan)"></span>Nutrición & Hábitos</span><span class="sub" id="kcalTotal"></span></h2>
     <div style="display:flex;gap:20px;flex-wrap:wrap">
       <div style="flex:1;min-width:240px"><div class="scroll" id="comidasList" style="max-height:150px"></div><div class="addform"><input id="cAlimento" placeholder="Comida" /><input id="cKcal" type="number" placeholder="kcal" style="max-width:90px"/><button class="addbtn" onclick="addComida()">+</button></div></div>
-      <div style="flex:1;min-width:200px"><div class="sub" style="margin-bottom:8px">Hábitos de hoy</div><div class="habits" id="habits"></div></div>
+      <div style="flex:1;min-width:200px"><div class="sub" style="margin-bottom:8px">Hábitos de hoy <span onclick="editHabits()" style="cursor:pointer;float:right" title="Añadir o borrar hábito">✎</span></div><div class="habits" id="habits"></div></div>
     </div>
   </section>
 </div>
@@ -241,12 +241,14 @@ function renderHeader(){
   const d=new Date();
   document.getElementById('today').textContent=d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   document.body.className=S.theme==='light'?'light':'';
-  let html=`<a class="lnk lnk-ide" href="${esc(S.links.idealista)||'#'}" target="_blank" rel="noopener">🏠 Idealista</a>`+
-           `<a class="lnk lnk-inmo" href="${esc(S.links.inmoweb)||'#'}" target="_blank" rel="noopener">🏢 Inmoweb</a>`+
-           `<a class="lnk lnk-crm" href="${esc(S.links.crm)||'#'}" target="_blank" rel="noopener">📇 CRM</a>`+
-           `<a class="lnk lnk-web" href="${esc(S.links.web)||'#'}" target="_blank" rel="noopener">🌐 Castresana</a>`+
-           `<a class="lnk lnk-yt" href="${esc(S.links.youtube)||'#'}" target="_blank" rel="noopener">▶ YouTube</a>`;
-  S.customLinks.forEach((l,i)=>html+=`<a class="lnk lnk-custom" href="${esc(l.url)||'#'}" target="_blank" rel="noopener" oncontextmenu="delCustomLink(event,${i})" title="clic dcho = borrar">🔗 ${esc(l.name)}</a>`);
+  let html=`<button class="btn" onclick="history.back()" title="Atrás">◀</button>`+
+           `<button class="btn" onclick="history.forward()" title="Adelante">▶</button>`+
+           `<a class="lnk lnk-ide" href="${esc(S.links.idealista)||'#'}">🏠 Idealista</a>`+
+           `<a class="lnk lnk-inmo" href="${esc(S.links.inmoweb)||'#'}">🏢 Inmoweb</a>`+
+           `<a class="lnk lnk-crm" href="${esc(S.links.crm)||'#'}">📇 CRM</a>`+
+           `<a class="lnk lnk-web" href="${esc(S.links.web)||'#'}">🌐 Castresana</a>`+
+           `<a class="lnk lnk-yt" href="${esc(S.links.youtube)||'#'}">▶ YouTube</a>`;
+  S.customLinks.forEach((l,i)=>html+=`<span class="lnk lnk-custom"><a href="${esc(l.url)||'#'}" style="color:#fff;text-decoration:none">🔗 ${esc(l.name)}</a><b onclick="delCustomLink2(${i})" style="cursor:pointer;margin-left:7px;opacity:.75">✕</b></span>`);
   html+=`<button class="btn" onclick="editLinks()">✎ enlaces</button><button class="btn" onclick="addCustomLink()">+ enlace</button>`+
         `<button class="btn" onclick="toggleTheme()">${S.theme==='light'?'🌙':'☀️'}</button>`+
         `<button class="btn" onclick="exportData()">⬇</button><button class="btn" onclick="importData()">⬆</button>`;
@@ -265,6 +267,8 @@ function editLinks(){
 }
 function addCustomLink(){const n=prompt('Nombre del enlace:');if(!n)return;const u=prompt('URL:');if(!u)return;S.customLinks.push({name:n.trim(),url:u.trim()});save()}
 function delCustomLink(e,i){e.preventDefault();if(confirm('¿Borrar enlace?')){S.customLinks.splice(i,1);save()}}
+function delCustomLink2(i){if(confirm('¿Borrar este enlace?')){S.customLinks.splice(i,1);save()}}
+function editHabits(){var a=prompt('Escribe un habito NUEVO para anadir (deja vacio para borrar uno):','');if(a===null)return;a=a.trim();if(a){if(!S.habitList.includes(a))S.habitList.push(a);save();return;}var n=prompt('Numero del habito a BORRAR:\n'+S.habitList.map((h,i)=>(i+1)+') '+h).join('\n'));if(n===null)return;var idx=parseInt(n,10)-1;if(idx>=0&&idx<S.habitList.length){S.habitList.splice(idx,1);save();}}
 function toggleTheme(){S.theme=S.theme==='light'?'dark':'light';save()}
 
 /* ---------- summary ---------- */
